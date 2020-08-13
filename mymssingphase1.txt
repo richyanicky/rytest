@@ -1,0 +1,1 @@
+14329	(s3://sscwgs-hg38/phase1/SSC11980.final.cram;s3://sscwgs-hg38/phase1/SSC11984.final.cram;s3://sscwgs-hg38/phase1/SSC11985.final.cram;s3://sscwgs-hg38/phase1/SSC12000.final.cram)
