@@ -1,7 +1,7 @@
 FROM mgymrek/advntr:latest
 
 # Add the fetch_and_run.sh script
-ADD fetch_and_run.sh /usr/local/bin/fetch_and_run.sh
+ADD dockerfiles/fetch_and_run.sh /usr/local/bin/fetch_and_run.sh
 
 # Get set up to run
 WORKDIR /tmp
