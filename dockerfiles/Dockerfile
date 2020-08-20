@@ -25,6 +25,8 @@ RUN apt-get update && apt-get install -qqy \
 
 FROM mgymrek/advntr:latest
 
+RUN advntr --help
+
 # Install samtools (needed to index reference fasta files)
 RUN wget -O samtools-1.9.tar.bz2 https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2
 RUN tar -xjf samtools-1.9.tar.bz2
