@@ -16,12 +16,14 @@ RUN apt-get update && apt-get install -qqy \
     unzip \
     zlib1g-dev
 
-RUN git clone https://github.com/mehrdadbakhtiari/adVNTR
-WORKDIR adVNTR
-RUN make
-RUN make install
-RUN python setup.py install
-WORKDIR ..
+#RUN git clone https://github.com/mehrdadbakhtiari/adVNTR
+#WORKDIR adVNTR
+#RUN make
+#RUN make install
+#RUN python setup.py install
+#WORKDIR ..
+
+FROM mgymrek/advntr:latest
 
 # Install samtools (needed to index reference fasta files)
 RUN wget -O samtools-1.9.tar.bz2 https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2
