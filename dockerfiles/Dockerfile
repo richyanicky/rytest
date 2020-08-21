@@ -1,4 +1,4 @@
-# FROM mgymrek/advntr:latest
+FROM mgymrek/advntr:latest
 
 RUN apt-get update && apt-get install -qqy \
     awscli \
@@ -22,8 +22,6 @@ RUN apt-get update && apt-get install -qqy \
 #RUN make install
 #RUN python setup.py install
 #WORKDIR ..
-
-FROM mgymrek/advntr:latest
 
 RUN advntr --help
 
