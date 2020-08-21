@@ -1,6 +1,5 @@
 FROM mgymrek/advntr:latest
 
-RUN advntr --help
 
 RUN apt-get update && apt-get install -qqy \
     awscli \
@@ -24,8 +23,6 @@ RUN apt-get update && apt-get install -qqy \
 #RUN make install
 #RUN python setup.py install
 #WORKDIR ..
-
-RUN advntr --help
 
 # Install samtools (needed to index reference fasta files)
 RUN wget -O samtools-1.9.tar.bz2 https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2
