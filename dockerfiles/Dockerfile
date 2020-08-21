@@ -1,5 +1,7 @@
 FROM mgymrek/advntr:latest
 
+RUN advntr --help
+
 RUN apt-get update && apt-get install -qqy \
     awscli \
     build-essential \
