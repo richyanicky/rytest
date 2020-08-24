@@ -1,5 +1,13 @@
-FROM mgymrek/advntr:latest
+#FROM mgymrek/advntr:latest
 
+FROM PYTHON:2.7
+
+RUN git clone https://github.com/mehrdadbakhtiari/adVNTR
+WORKDIR adVNTR
+RUN make
+RUN make install
+RUN python setup.py install
+WORKDIR ..
 
 RUN apt-get update && apt-get install -qqy \
     awscli \
