@@ -2,12 +2,16 @@
 
 FROM python:2.7
 
+
+RUN pip install Cython
+
 RUN git clone https://github.com/mehrdadbakhtiari/adVNTR
 WORKDIR adVNTR
 RUN make
 RUN make install
 RUN python setup.py install
 WORKDIR ..
+
 
 RUN apt-get update && apt-get install -qqy \
     awscli \
