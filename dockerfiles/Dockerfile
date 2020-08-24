@@ -1,6 +1,6 @@
 #FROM mgymrek/advntr:latest
 
-FROM PYTHON:2.7
+FROM python:2.7
 
 RUN git clone https://github.com/mehrdadbakhtiari/adVNTR
 WORKDIR adVNTR
