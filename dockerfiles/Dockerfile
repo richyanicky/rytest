@@ -1,16 +1,16 @@
-FROM mgymrek/advntr:latest
+#FROM mgymrek/advntr:latest
 
-#FROM python:2.7
+FROM python:2.7
 
 
-#RUN pip install Cython numpy scipy biopython==1.76 pysam networkx joblib scikit-learn 
+RUN pip install Cython numpy scipy biopython==1.76 pysam networkx joblib scikit-learn  keras
 
-#RUN git clone https://github.com/mehrdadbakhtiari/adVNTR
-#WORKDIR adVNTR
-#RUN make
-#RUN make install
-#RUN python setup.py install
-#WORKDIR ..
+RUN git clone https://github.com/mehrdadbakhtiari/adVNTR
+WORKDIR adVNTR
+RUN make
+RUN make install
+RUN python setup.py install
+WORKDIR ..
 
 
 RUN apt-get update && apt-get install -qqy \
