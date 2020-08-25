@@ -3,7 +3,7 @@
 FROM python:2.7
 
 
-RUN pip install Cython numpy scipy biopython==1.76 pysam networkx joblib scikit-learn  keras
+RUN pip install Cython numpy scipy==1.2.2 biopython==1.76 pysam networkx joblib scikit-learn  keras tensorflow
 
 RUN git clone https://github.com/mehrdadbakhtiari/adVNTR
 WORKDIR adVNTR
