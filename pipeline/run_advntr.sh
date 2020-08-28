@@ -5,8 +5,8 @@ CRAMSLIST=$1
 FAMID=$2
 ENC_SSC_ACCESS_KEY=$3
 ENC_SSC_SECRET_ACCESS_KEY=$4
-STARTCHR=${5:-1}
-SSC_PARAMS=${6}
+#STARTCHR=${5:-1}
+SSC_PARAMS=${5}
 echo "[run_advntr.sh]: ${FAMID}: ${CRAMSLIST}"
 
 die()
@@ -27,10 +27,12 @@ rm ${DATADIR}/${FAMID}/results/*
 rm ${DATADIR}/${FAMID}/datafiles/*
 rm ${DATADIR}/${FAMID}/tmp/*
 
-aws s3 cp s3://ssc-denovos/scripts/${SSC_PARAMS} ${DATADIR}/${FAMID}/${SSC_PARAMS} || die "Error copying ${SSC_PARAMS}"
+aws s3 cp s3://ssc-advntr-denovos/scripts/${SSC_PARAMS} ${DATADIR}/${FAMID}/${SSC_PARAMS} || die "Error copying ${SSC_PARAMS}"
 source ${DATADIR}/${FAMID}/${SSC_PARAMS}
-aws s3 cp s3://ssc-denovos/scripts/decrypt.py ${DATADIR}/${FAMID}/  || die "Error copying decrypt.py"
-aws s3 cp s3://ssc-denovos/scripts/encrypt_code.txt ${DATADIR}/${FAMID}/  || die "Error copying encrypt_code.txt"
+aws s3 cp s3://ssc-advntr-denovos/scripts/ssc_shared_params.sh ${DATADIR}/${FAMID}/ssc_shared_params.sh || die "Error copying ${SSC_PARAMS}"
+source ${DATADIR}/${FAMID}/ssc_shared_params.sh
+aws s3 cp s3://ssc-advntr-denovos/scripts/decrypt.py ${DATADIR}/${FAMID}/  || die "Error copying decrypt.py"
+aws s3 cp s3://ssc-advntr-denovos/scripts/encrypt_code.txt ${DATADIR}/${FAMID}/  || die "Error copying encrypt_code.txt"
 
 
 # Get encrypted SSC credentials
@@ -49,10 +51,6 @@ echo "[run_advntr.sh]: Downloading ref genome"
 aws s3 --profile ssc2 cp ${REFFASTA} ${DATADIR}/${FAMID}/datafiles/ref.fa || die "Error copying GangSTR ref FASTA: ${REFFASTA}"
 samtools faidx ${DATADIR}/${FAMID}/datafiles/ref.fa || die "Could not index ref fasta"
 
-# GangSTR reference regions
-echo "[run_advntr.sh]: Downloading adVNTR regions"
-aws s3 cp ../datafiles/GRCh38_VNTRs_chr${chrom}.db ${DATADIR}/${FAMID}/datafiles/GRCh38_VNTRs_chr${chrom}.db || die "Error copying adVNTR ref BED: ${chrom}"
-
 # BAM files from SSC
 echo "[run_gangstr.sh]: Downloading CRAMs"
 for CRAM in $(echo ${CRAMSLIST} | sed "s/(//g" | sed "s/)//g" | sed "s/;/ /g")
@@ -64,36 +62,31 @@ done
 CRAMSINPUT=$(ls ${DATADIR}/${FAMID}/datafiles/*.cram | tr '\n' ',' | sed 's/,$//') # Get comma sep list of crams
 echo "CRAM files list" ${CRAMSINPUT}
 
-if [ ${STARTCHR} == "X" ]; then
-  ARRAY=(X Y)
-elif [ ${STARTCHR} == "Y" ]; then
-  ARRAY=(Y)
-else
   #ARRAY=($(seq ${STARTCHR} 22) X Y)
   ARRAY=($(seq ${STARTCHR} 22))
-fi
 
 for chrom in "${ARRAY[@]}"
 do
+# advntr reference regions
+aws s3 cp s3://ssc-advntr-denovos/datafiles/GRCh38_VNTRs_chr${chrom}.db ${DATADIR}/${FAMID}/datafiles/GRCh38_VNTRs_chr${chrom}.db || die "Error copying adVNTR ref db: ${chrom}"
     cmd="echo [run_advntr.sh]: Running advntr chr${chrom}"
 
+for cram in $(echo $CRAMSINPUT | sed "s/,/ /g")
     ### Second, run GangSTR
-    cmd="${cmd}; advntr \
+    cmd="advntr \
     genotype
-	--alignment_file ${CRAMSINPUT} \
+	--alignment_file ${cram} \
 	--models ${DATADIR}/${FAMID}/datafiles/GRCh38_VNTRs_chr${chrom}.db \
-	-r ${DATADIR}/${FAMID}/datafiles/ref.fa \
-    --working_directory ${DATADIR}/${FAMID}/tmp/\
-    --outfmt vcf \
-	--out ${DATADIR}/${FAMID}/results/${FAMID}_${chrom}.vcf"
-    cmd="${cmd} && cat ${DATADIR}/${FAMID}/results/${FAMID}_${chrom}.vcf | vcf-sort -t ${DATADIR}/${FAMID}/tmp/ | bgzip -c > ${DATADIR}/${FAMID}/results/${FAMID}_${chrom}.sorted.vcf.gz"
-    cmd="${cmd} && tabix -p vcf ${DATADIR}/${FAMID}/results/${FAMID}_${chrom}.sorted.vcf.gz"
+        -r ${DATADIR}/${FAMID}/datafiles/ref.fa \
+    --working_directory ${DATADIR}/${FAMID}/tmp \
+    --outfmt bed \
+	--out ${DATADIR}/${FAMID}/results/${FAMID}_${chrom}_${cram}.bed"
 
     ### Third, upload results to S3
-    cmd="${cmd} && aws s3 cp ${DATADIR}/${FAMID}/results/${FAMID}_${chrom}.sorted.vcf.gz ${GANGSTRDIR}/"
-    cmd="${cmd} && aws s3 cp ${DATADIR}/${FAMID}/results/${FAMID}_${chrom}.sorted.vcf.gz.tbi ${GANGSTRDIR}/"
+    cmd="${cmd} && aws s3 cp ${DATADIR}/${FAMID}/results/${FAMID}_${chrom}_$(cram}.bed ${GANGSTRDIR}/"
     echo $cmd
-done | xargs -n1 -I% -P${THREADS} sh -c "%"
+done | xargs sh -c
+done 
 
 ### Cleanup before moving on to next job
 rm ${DATADIR}/${FAMID}/results/*

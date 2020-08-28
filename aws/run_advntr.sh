@@ -78,22 +78,19 @@ do
     cmd="echo [run_advntr.sh]: Running advntr chr${chrom}"
 
     ### Second, run GangSTR
-    cmd="${cmd}; advntr \
+    cmd="advntr \
     genotype
 	--alignment_file ${CRAMSINPUT} \
 	--models ${DATADIR}/${FAMID}/datafiles/GRCh38_VNTRs_chr${chrom}.db \
 	-r ${DATADIR}/${FAMID}/datafiles/ref.fa \
     --working_directory ${DATADIR}/${FAMID}/tmp/\
-    --outfmt vcf \
-	--out ${DATADIR}/${FAMID}/results/${FAMID}_${chrom}.vcf"
-    cmd="${cmd} && cat ${DATADIR}/${FAMID}/results/${FAMID}_${chrom}.vcf | vcf-sort -t ${DATADIR}/${FAMID}/tmp/ | bgzip -c > ${DATADIR}/${FAMID}/results/${FAMID}_${chrom}.sorted.vcf.gz"
-    cmd="${cmd} && tabix -p vcf ${DATADIR}/${FAMID}/results/${FAMID}_${chrom}.sorted.vcf.gz"
+    --outfmt bed \
+	--out ${DATADIR}/${FAMID}/results/${FAMID}_${chrom}.bed"
 
     ### Third, upload results to S3
     cmd="${cmd} && aws s3 cp ${DATADIR}/${FAMID}/results/${FAMID}_${chrom}.sorted.vcf.gz ${GANGSTRDIR}/"
-    cmd="${cmd} && aws s3 cp ${DATADIR}/${FAMID}/results/${FAMID}_${chrom}.sorted.vcf.gz.tbi ${GANGSTRDIR}/"
     echo $cmd
-done | xargs -n1 -I% -P${THREADS} sh -c "%"
+done | xargs sh -c "%"
 
 ### Cleanup before moving on to next job
 rm ${DATADIR}/${FAMID}/results/*
