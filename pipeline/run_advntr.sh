@@ -62,19 +62,19 @@ done
 CRAMSINPUT=$(ls ${DATADIR}/${FAMID}/datafiles/*.cram | tr '\n' ',' | sed 's/,$//') # Get comma sep list of crams
 echo "CRAM files list" ${CRAMSINPUT}
 
-  #ARRAY=($(seq ${STARTCHR} 22) X Y)
-  ARRAY=($(seq ${STARTCHR} 22))
 
-for chrom in "${ARRAY[@]}"
+ARRA=(1 2 3 4 5 6)
+
+for chrom in ${ARRA[@]};
 do
 # advntr reference regions
-aws s3 cp s3://ssc-advntr-denovos/datafiles/GRCh38_VNTRs_chr${chrom}.db ${DATADIR}/${FAMID}/datafiles/GRCh38_VNTRs_chr${chrom}.db || die "Error copying adVNTR ref db: ${chrom}"
-    cmd="echo [run_advntr.sh]: Running advntr chr${chrom}"
+aws s3 cp s3://ssc-advntr-denovos/datafiles/GRCh38_VNTRs_chr${chrom}.db ${DATADIR}/${FAMID}/datafiles/GRCh38_VNTRs_chr${chrom}.db || die "Error copying adVNTR ref db:"
 
-for cram in $(echo $CRAMSINPUT | sed "s/,/ /g")
+for cram in $(echo ${CRAMSINPUT} | sed "s/,/ /g");
+do
     ### Second, run GangSTR
     cmd="advntr \
-    genotype
+    genotype \
 	--alignment_file ${cram} \
 	--models ${DATADIR}/${FAMID}/datafiles/GRCh38_VNTRs_chr${chrom}.db \
         -r ${DATADIR}/${FAMID}/datafiles/ref.fa \
@@ -83,8 +83,8 @@ for cram in $(echo $CRAMSINPUT | sed "s/,/ /g")
 	--out ${DATADIR}/${FAMID}/results/${FAMID}_${chrom}_${cram}.bed"
 
     ### Third, upload results to S3
-    cmd="${cmd} && aws s3 cp ${DATADIR}/${FAMID}/results/${FAMID}_${chrom}_$(cram}.bed ${GANGSTRDIR}/"
-    echo $cmd
+    cmd="${cmd} && aws s3 cp ${DATADIR}/${FAMID}/results/${FAMID}_${chrom}_${cram}.bed ${GANGSTRDIR}/ "
+    echo ${cmd}
 done | xargs sh -c
 done 
 
