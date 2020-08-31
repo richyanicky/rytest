@@ -15,7 +15,7 @@
 # It can also download a zip file from S3 and run a script from inside.
 # See below for usage instructions.
 
-PATH="/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/local/sbin"
+PATH="/opt/conda/bin:/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/local/sbin"
 BASENAME="${0##*/}"
 
 usage () {
