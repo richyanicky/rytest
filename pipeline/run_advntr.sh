@@ -15,16 +15,16 @@ die()
     echo "$BASE error: $1" >&2
     exit 1
 }
-wget https://repo.anaconda.com/archive/Anaconda3-2019.03-Linux-x86_64.sh -O /tmp/anaconda3.sh
+#wget https://repo.anaconda.com/archive/Anaconda3-2019.03-Linux-x86_64.sh -O /tmp/anaconda3.sh
 
 # Run the installer (installing without -p should automatically install into '/' (root dir)
-bash /tmp/anaconda3.sh -b -p /home/ec2-user/anaconda3
-rm /tmp/anaconda3.sh
+#bash /tmp/anaconda3.sh -b -p /home/ec2-user/anaconda3
+#rm /tmp/anaconda3.sh
 
 ### Run the conda init script to setup the shell
-echo ". /home/ec2-user/anaconda3/etc/profile.d/conda.sh" >> /home/ec2-user/.bashrc
-. /home/ec2-user/anaconda3/etc/profile.d/conda.sh
-source /home/ec2-user/.bashrc
+#echo ". /home/ec2-user/anaconda3/etc/profile.d/conda.sh" >> /home/ec2-user/.bashrc
+#. /home/ec2-user/anaconda3/etc/profile.d/conda.sh
+#source /home/ec2-user/.bashrc
 
 # Create a base Python3 environment separate from the base env
 #conda create -y --name python3
@@ -99,19 +99,20 @@ aws s3 cp s3://ssc-advntr-denovos/datafiles/GRCh38_VNTRs_chr${chrom}.db ${DATADI
 for cram in $(echo ${CRAMSINPUT} | sed "s/,/ /g");
 do
     ### Second, run GangSTR
-    cmd="advntr \
-    genotype \
-	--alignment_file ${cram} \
-	--models ${DATADIR}/${FAMID}/datafiles/GRCh38_VNTRs_chr${chrom}.db \
-        -r ${DATADIR}/${FAMID}/datafiles/ref.fa \
-    --working_directory ${DATADIR}/${FAMID}/tmp \
-    --outfmt bed \
-	--out ${DATADIR}/${FAMID}/results/${FAMID}_${chrom}_${cram}.bed"
+    cmd="advntr genotype --alignment_file ${cram} --models ${DATADIR}/${FAMID}/datafiles/GRCh38_VNTRs_chr${chrom}.db -r ${DATADIR}/${FAMID}/datafiles/ref.fa --working_directory ${DATADIR}/${FAMID}/tmp --outfmt bed --outfile ${DATADIR}/${FAMID}/results/${FAMID}_${chrom}_${cram}.bed" 
+
+#    genotype \
+#	--alignment_file ${cram} \
+#	--models ${DATADIR}/${FAMID}/datafiles/GRCh38_VNTRs_chr${chrom}.db \
+#        -r ${DATADIR}/${FAMID}/datafiles/ref.fa \
+#    --working_directory ${DATADIR}/${FAMID}/tmp \
+#    --outfmt bed \
+#	--outfile ${DATADIR}/${FAMID}/results/${FAMID}_${chrom}_${cram}.bed"
 
     ### Third, upload results to S3
     cmd="${cmd} && aws s3 cp ${DATADIR}/${FAMID}/results/${FAMID}_${chrom}_${cram}.bed ${GANGSTRDIR}/ "
-    echo ${cmd}
-done | xargs sh -c
+    echo ${cmd} | xargs sh -c
+done 
 done 
 
 ### Cleanup before moving on to next job
