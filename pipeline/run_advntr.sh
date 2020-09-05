@@ -1,5 +1,4 @@
 #!/bin/bash
-set -x
 #Input values
 CRAMSLIST=$1
 FAMID=$2
@@ -49,6 +48,12 @@ DATADIR=/scratch # This is where we have all the EBS storage space mounted
 mkdir -p ${DATADIR}/${FAMID}/datafiles
 mkdir -p ${DATADIR}/${FAMID}/results
 mkdir -p ${DATADIR}/${FAMID}/tmp/
+
+
+ls -la ${DATADIR}/${FAMID}/
+ls -la ${DATADIR}/${FAMID}/results
+
+
 rm ${DATADIR}/${FAMID}/results/*
 rm ${DATADIR}/${FAMID}/datafiles/*
 rm ${DATADIR}/${FAMID}/tmp/*
@@ -89,7 +94,7 @@ CRAMSINPUT=$(ls ${DATADIR}/${FAMID}/datafiles/*.cram | tr '\n' ',' | sed 's/,$//
 echo "CRAM files list" ${CRAMSINPUT}
 
 
-ARRA=(1 2 3 4 5 6)
+ARRA=(1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22)
 
 for chrom in ${ARRA[@]};
 do
@@ -98,8 +103,13 @@ aws s3 cp s3://ssc-advntr-denovos/datafiles/GRCh38_VNTRs_chr${chrom}.db ${DATADI
 
 for cram in $(echo ${CRAMSINPUT} | sed "s/,/ /g");
 do
+
+    cramfname=basename "$cram"
     ### Second, run GangSTR
-    cmd="advntr genotype --alignment_file ${cram} --models ${DATADIR}/${FAMID}/datafiles/GRCh38_VNTRs_chr${chrom}.db -r ${DATADIR}/${FAMID}/datafiles/ref.fa --working_directory ${DATADIR}/${FAMID}/tmp --outfmt bed --outfile ${DATADIR}/${FAMID}/results/${FAMID}_${chrom}_${cram}.bed" 
+    paramsadv="genotype --alignment_file ${cram} --models ${DATADIR}/${FAMID}/datafiles/GRCh38_VNTRs_chr${chrom}.db -r ${DATADIR}/${FAMID}/datafiles/ref.fa --working_directory ${DATADIR}/${FAMID}/tmp --outfmt bed --outfile ${DATADIR}/${FAMID}/results/${FAMID}${chrom}${cramfname}.bed"
+    advntr ${paramsadv}
+
+#    cmd="advntr genotype --alignment_file ${cram} --models ${DATADIR}/${FAMID}/datafiles/GRCh38_VNTRs_chr${chrom}.db -r ${DATADIR}/${FAMID}/datafiles/ref.fa --working_directory ${DATADIR}/${FAMID}/tmp --outfmt bed --outfile ${DATADIR}/${FAMID}/results/${FAMID}_${chrom}_${cram}.bed" 
 
 #    genotype \
 #	--alignment_file ${cram} \
@@ -110,7 +120,7 @@ do
 #	--outfile ${DATADIR}/${FAMID}/results/${FAMID}_${chrom}_${cram}.bed"
 
     ### Third, upload results to S3
-    cmd="${cmd} && aws s3 cp ${DATADIR}/${FAMID}/results/${FAMID}_${chrom}_${cram}.bed ${GANGSTRDIR}/ "
+    cmd="aws s3 cp ${DATADIR}/${FAMID}/results/${FAMID}${chrom}${cramfname}.bed ${GANGSTRDIR}/ "
     echo ${cmd} | xargs sh -c
 done 
 done 

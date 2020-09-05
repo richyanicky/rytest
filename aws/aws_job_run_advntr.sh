@@ -1,7 +1,6 @@
  #!/bin/bash python3
 # Run this script on snorlax inside script dir
 # Run command ./aws_job_run_gangstr_chrx.sh
-set -x
 
 #SSC_FILE='../files/SSC_phase1t_crams_input.tab'
 SSC_FILE='../files/SSC_crams_input.test'
