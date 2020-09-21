@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 #Input values
 CRAMSLIST=$1
 FAMID=$2
@@ -95,7 +96,7 @@ echo "CRAM files list" ${CRAMSINPUT}
 
 
 ARRA=(1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22)
-
+ARRA=(21 22)
 for chrom in ${ARRA[@]};
 do
 # advntr reference regions
@@ -121,7 +122,7 @@ do
 
     ### Third, upload results to S3
     cmd="aws s3 cp ${DATADIR}/${FAMID}/results/${FAMID}${chrom}${cramfname}.bed ${GANGSTRDIR}/ "
-    echo ${cmd} | xargs sh -c
+    ${cmd} 
 done 
 done 
 
