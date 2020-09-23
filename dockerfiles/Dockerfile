@@ -12,7 +12,7 @@ FROM ubuntu:18.04
  LABEL base_image="ubuntu:16.04"
  LABEL version="2"
  LABEL software="advntr"
- LABEL software.version="1.3.0"
+ LABEL software.version="1.4.0"
  LABEL about.summary="adVNTR genotypes Variable Number Tandem Repeats from mapped sequencing reads"
  LABEL about.home="https://github.com/mehrdadbakhtiari/adVNTR/"
  LABEL about.documentation="https://github.com/mehrdadbakhtiari/adVNTR/blob/master/README.md"

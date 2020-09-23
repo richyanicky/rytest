@@ -40,7 +40,7 @@ while read -r FAMID CRAMSLIST; do
   aws batch submit-job \
       --job-name ssc-${FAMID} \
       --job-queue ssc-denovo \
-      --job-definition SSC-advntr:6 \
+      --job-definition SSC-advntr:8 \
       --container-overrides 'command=["run_advntr.sh",'"${CRAMSLIST}"','"${FAMID}"','"${ENC_SSC_ACCESS_KEY}"','"${ENC_SSC_SECRET_ACCESS_KEY}"', '"${SSC_PARAMS}"'],environment=[{name="BATCH_FILE_TYPE",value="script"},{name="BATCH_FILE_S3_URL",value="s3://ssc-advntr-denovos/scripts/run_advntr.sh"}]'
 
 done <${SSC_FILE}
