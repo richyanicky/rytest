@@ -29,7 +29,9 @@ FROM ubuntu:18.04
              unzip \
                  wget \
                      awscli \
-                         bzip2
+                         bzip2 \
+curl \
+git
 #
 #                         # Install conda and give write permissions to conda folder
                          RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
@@ -45,7 +47,7 @@ FROM ubuntu:18.04
                                      RUN conda config --set ssl_verify no
                                      RUN conda upgrade conda
 
-                                     RUN conda install advntr
+                                     #RUN conda install advntr=1.4.0
 
                                      RUN apt-get install -qqy fuse
                                      RUN wget https://raw.githubusercontent.com/mitre/fusera/master/install.sh; chmod +x install.sh
@@ -60,15 +62,8 @@ FROM ubuntu:18.04
                                      #WORKDIR /tmp
                                      #USER nobody
                                      #ENTRYPOINT ["/usr/local/bin/fetch_and_run.sh"]
-#
-#RUN pip install Cython numpy scipy==1.2.2 biopython==1.76 pysam networkx joblib scikit-learn  keras==2.3.1 tensorflow
-
-#RUN git clone https://github.com/mehrdadbakhtiari/adVNTR
-#WORKDIR adVNTR
-#RUN make
-#RUN make install
-#RUN python setup.py install
-#WORKDIR ..
+RUN pip install --upgrade pip
+RUN pip install Cython numpy scipy==1.2.2 biopython==1.76 pysam networkx joblib scikit-learn  keras==2.3.1 tensorflow
 
 
 RUN apt-get update && apt-get install -qqy \
@@ -87,12 +82,12 @@ RUN apt-get update && apt-get install -qqy \
     unzip \
     zlib1g-dev
 
-#RUN git clone https://github.com/mehrdadbakhtiari/adVNTR
-#WORKDIR adVNTR
-#RUN make
-#RUN make install
-#RUN python setup.py install
-#WORKDIR ..
+RUN git clone https://github.com/mehrdadbakhtiari/adVNTR
+WORKDIR adVNTR
+RUN make
+RUN make install
+RUN python setup.py install
+WORKDIR ..
 
 # Install samtools (needed to index reference fasta files)
 RUN wget -O samtools-1.9.tar.bz2 https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2

@@ -95,7 +95,7 @@ CRAMSINPUT=$(ls ${DATADIR}/${FAMID}/datafiles/*.cram | tr '\n' ',' | sed 's/,$//
 echo "CRAM files list" ${CRAMSINPUT}
 
 
-ARRA=(1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22)
+ARRA=(21 22)
 for chrom in ${ARRA[@]};
 do
 # advntr reference regions
@@ -109,18 +109,9 @@ do
     paramsadv="genotype --alignment_file ${cram} --models ${DATADIR}/${FAMID}/datafiles/GRCh38_VNTRs_chr${chrom}.db -r ${DATADIR}/${FAMID}/datafiles/ref.fa --working_directory ${DATADIR}/${FAMID}/tmp --outfmt vcf  --outfile ${DATADIR}/${FAMID}/results/${FAMID}${chrom}${cramfname}.vcf"
     advntr ${paramsadv}
 
-#    cmd="advntr genotype --alignment_file ${cram} --models ${DATADIR}/${FAMID}/datafiles/GRCh38_VNTRs_chr${chrom}.db -r ${DATADIR}/${FAMID}/datafiles/ref.fa --working_directory ${DATADIR}/${FAMID}/tmp --outfmt bed --outfile ${DATADIR}/${FAMID}/results/${FAMID}_${chrom}_${cram}.bed" 
-
-#    genotype \
-#	--alignment_file ${cram} \
-#	--models ${DATADIR}/${FAMID}/datafiles/GRCh38_VNTRs_chr${chrom}.db \
-#        -r ${DATADIR}/${FAMID}/datafiles/ref.fa \
-#    --working_directory ${DATADIR}/${FAMID}/tmp \
-#    --outfmt bed \
-#	--outfile ${DATADIR}/${FAMID}/results/${FAMID}_${chrom}_${cram}.bed"
 
     ### Third, upload results to S3
-    cmd="aws s3 cp ${DATADIR}/${FAMID}/results/${FAMID}${chrom}${cramfname}.bed ${GANGSTRDIR}/ "
+    cmd="aws s3 cp ${DATADIR}/${FAMID}/results/${FAMID}${chrom}${cramfname}.vcf ${GANGSTRDIR}/ "
     ${cmd} 
 done 
 done 
