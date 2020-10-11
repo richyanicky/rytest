@@ -106,7 +106,6 @@ fetch_and_run_zip () {
   chmod u+x "${script}" || error_exit "Failed to chmod script."
   exec "${script}" "${@}" || error_exit " Failed to execute script."
 }
-
 # Main - dispatch user request to appropriate function
 case ${BATCH_FILE_TYPE} in
   zip)
