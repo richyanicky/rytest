@@ -38,8 +38,7 @@ WORKDIR adVNTR-1.4.0
 # # Install advntr
   RUN python setup.py install
 
-WORKDIR ..
-WORKDIR ..
+#WORKDIR ..
 #  #
 
 
@@ -65,7 +64,9 @@ WORKDIR ..
                                      RUN unzip vntr_data_recommended_loci_hg38.zip
 #
                                      ENV PATH="/opt/conda/bin/:${PATH}"
-#
+RUN echo $(ls -1 )
+RUN pwd
+RUN echo "$PWD"
                                      ADD fetch_and_run.sh /usr/local/bin/fetch_and_run.sh
                                      WORKDIR /tmp
                                      #USER nobody
