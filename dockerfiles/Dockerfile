@@ -38,7 +38,7 @@ WORKDIR adVNTR-1.4.0
 # # Install advntr
   RUN python setup.py install
 
-#WORKDIR ..
+WORKDIR ..
 #  #
 
 
