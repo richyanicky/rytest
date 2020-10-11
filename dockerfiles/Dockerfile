@@ -18,8 +18,6 @@ python python-pip \
 libz-dev \
 curl
 
-#RUN pip install --upgrade pip
-
 RUN wget https://github.com/mehrdadbakhtiari/adVNTR/archive/1.4.0.tar.gz
 RUN tar -xzvf 1.4.0.tar.gz
 WORKDIR adVNTR-1.4.0
@@ -42,9 +40,6 @@ WORKDIR adVNTR-1.4.0
 
 WORKDIR ..
 #  #
-#  # # Try running it to check version
-  # RUN advntr --version
-#
 
 
 #
@@ -60,10 +55,6 @@ WORKDIR ..
                                      RUN conda config --add channels bioconda
 
                                      RUN conda config --set ssl_verify no
-#RUN conda install python
-                                     #RUN conda upgrade conda
-
-                       #              RUN conda install advntr
 
                                      RUN apt-get install -qqy fuse
                                      RUN wget https://raw.githubusercontent.com/mitre/fusera/master/install.sh; chmod +x install.sh
@@ -75,9 +66,9 @@ WORKDIR ..
                                      ENV PATH="/opt/conda/bin/:${PATH}"
 #
                                      ADD fetch_and_run.sh /usr/local/bin/fetch_and_run.sh
-                                     #WORKDIR /tmp
+                                     WORKDIR /tmp
                                      #USER nobody
-                                     #ENTRYPOINT ["/usr/local/bin/fetch_and_run.sh"]
+                                     ENTRYPOINT ["/usr/local/bin/fetch_and_run.sh"]
 
 
 
@@ -108,5 +99,5 @@ RUN pip3 install Crypto
 RUN advntr --help
 # Get set up to run
 WORKDIR /tmp
-ENTRYPOINT ["/usr/local/bin/fetch_and_run.sh"]
+#ENTRYPOINT ["/usr/local/bin/fetch_and_run.sh"]
 
