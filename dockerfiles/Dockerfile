@@ -5,22 +5,6 @@
 # Base image
 FROM ubuntu:18.04
 
-# Maintainer
-# MAINTAINER Mehrdad Bakhtiari <mbakhtiari@ucsd.edu>
-#
-# # METADATA
- LABEL base_image="ubuntu:16.04"
- LABEL version="2"
- LABEL software="advntr"
- LABEL software.version="1.4.0"
- LABEL about.summary="adVNTR genotypes Variable Number Tandem Repeats from mapped sequencing reads"
- LABEL about.home="https://github.com/mehrdadbakhtiari/adVNTR/"
- LABEL about.documentation="https://github.com/mehrdadbakhtiari/adVNTR/blob/master/README.md"
- LABEL about.license_file="https://github.com/mehrdadbakhtiari/adVNTR/blob/master/LICENSE"
- LABEL about.license="BSD3-clause"
- LABEL extra.identifiers.biotools="adVNTR"
- LABEL about.tags="Genomics"
-#
 # # Installation
  ENV DEBIAN_FRONTEND=noninteractive
  RUN apt-get update && apt-get upgrade -y && apt-get install -qqy \
@@ -30,8 +14,39 @@ FROM ubuntu:18.04
                  wget \
                      awscli \
                          bzip2 \
-curl \
-git
+python python-pip \
+libz-dev \
+curl
+
+#RUN pip install --upgrade pip
+
+RUN wget https://github.com/mehrdadbakhtiari/adVNTR/archive/1.4.0.tar.gz
+RUN tar -xzvf 1.4.0.tar.gz
+WORKDIR adVNTR-1.4.0
+
+# Install pip dependencies
+  RUN pip install numpy==1.15.0
+  RUN pip install joblib==0.14.1
+  RUN pip install scipy==1.1.0
+  RUN pip install scikit-learn==0.16.1
+  RUN pip install Keras==2.3.1
+  RUN pip install cython
+  RUN pip install biopython==1.76
+  RUN pip install pysam==0.9.1.4
+  RUN pip install networkx==1.11
+  RUN pip install tensorflow==1.13.2
+#
+
+# # Install advntr
+  RUN python setup.py install
+
+WORKDIR ..
+#  #
+#  # # Try running it to check version
+  # RUN advntr --version
+#
+
+
 #
 #                         # Install conda and give write permissions to conda folder
                          RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
@@ -45,9 +60,10 @@ git
                                      RUN conda config --add channels bioconda
 
                                      RUN conda config --set ssl_verify no
-                                     RUN conda upgrade conda
+#RUN conda install python
+                                     #RUN conda upgrade conda
 
-                                     #RUN conda install advntr=1.4.0
+                       #              RUN conda install advntr
 
                                      RUN apt-get install -qqy fuse
                                      RUN wget https://raw.githubusercontent.com/mitre/fusera/master/install.sh; chmod +x install.sh
@@ -58,44 +74,22 @@ git
 #
                                      ENV PATH="/opt/conda/bin/:${PATH}"
 #
-                                     #ADD fetch_and_run.sh /usr/local/bin/fetch_and_run.sh
+                                     ADD fetch_and_run.sh /usr/local/bin/fetch_and_run.sh
                                      #WORKDIR /tmp
                                      #USER nobody
                                      #ENTRYPOINT ["/usr/local/bin/fetch_and_run.sh"]
-RUN pip install --upgrade pip
-RUN pip install Cython numpy scipy==1.2.2 biopython==1.76 pysam networkx joblib scikit-learn  keras==2.3.1 tensorflow
 
 
-RUN apt-get update && apt-get install -qqy \
-    awscli \
-    build-essential \
-    git \
-    libbz2-dev \
-    liblzma-dev \
-    make \
-    pkg-config \
-    python \
-    python3 \
-    python3-dev \
-    python3-pip \
-    wget \
-    unzip \
-    zlib1g-dev
 
-RUN git clone https://github.com/mehrdadbakhtiari/adVNTR
-WORKDIR adVNTR
-RUN make
-RUN make install
-RUN python setup.py install
-WORKDIR ..
 
+RUN apt-get -y install autoconf automake make gcc perl zlib1g-dev libbz2-dev liblzma-dev libcurl4-gnutls-dev libssl-dev
 # Install samtools (needed to index reference fasta files)
 RUN wget -O samtools-1.9.tar.bz2 https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2
 RUN tar -xjf samtools-1.9.tar.bz2
 WORKDIR samtools-1.9
 RUN ./configure --without-curses && make && make install
+#--without-curses && make && make install
 WORKDIR ..
-
 # Install bedtools (needed for DumpSTR)
 RUN wget -O bedtools-2.27.1.tar.gz https://github.com/arq5x/bedtools2/releases/download/v2.27.1/bedtools-2.27.1.tar.gz
 RUN tar -xzvf bedtools-2.27.1.tar.gz
@@ -110,8 +104,8 @@ RUN apt-get update -y && \
 
 RUN pip3 install Crypto
 # Add the fetch_and_run.sh script
-ADD dockerfiles/fetch_and_run.sh /usr/local/bin/fetch_and_run.sh
-RUN which advntr
+#ADD dockerfiles/fetch_and_run.sh /usr/local/bin/fetch_and_run.sh
+RUN advntr --help
 # Get set up to run
 WORKDIR /tmp
 ENTRYPOINT ["/usr/local/bin/fetch_and_run.sh"]
