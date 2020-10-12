@@ -3,10 +3,10 @@
 #FROM python:2.7
 
 # Base image
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 
 # # Installation
- ENV DEBIAN_FRONTEND=noninteractive
+ #ENV DEBIAN_FRONTEND=noninteractive
  RUN apt-get update && apt-get upgrade -y && apt-get install -qqy \
      gcc \
          libbz2-dev \
