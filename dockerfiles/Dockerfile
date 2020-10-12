@@ -3,7 +3,7 @@
 #FROM python:2.7
 
 # Base image
-FROM ubuntu:18.04
+FROM ubuntu:16.04
 
 # # Installation
  ENV DEBIAN_FRONTEND=noninteractive
