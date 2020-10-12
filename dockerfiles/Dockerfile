@@ -18,6 +18,8 @@ python python-pip \
 libz-dev \
 curl
 
+ADD fetch_and_run.sh /usr/local/bin/fetch_and_run.sh
+
 RUN wget https://github.com/mehrdadbakhtiari/adVNTR/archive/1.4.0.tar.gz
 RUN tar -xzvf 1.4.0.tar.gz
 WORKDIR adVNTR-1.4.0
@@ -67,7 +69,7 @@ WORKDIR ..
 RUN echo $(ls -1 )
 RUN pwd
 RUN echo "$PWD"
-                                     ADD fetch_and_run.sh /usr/local/bin/fetch_and_run.sh
+   #                                  ADD fetch_and_run.sh /usr/local/bin/fetch_and_run.sh
                                      WORKDIR /tmp
                                      #USER nobody
                                      ENTRYPOINT ["/usr/local/bin/fetch_and_run.sh"]
